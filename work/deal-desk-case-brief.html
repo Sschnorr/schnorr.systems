@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deal Desk · Six Systems, One Pipeline — Steve Schnorr</title>
+<meta name="description" content="A commercial governance platform built solo in 8 weeks across six systems — and the architectural call to pause it.">
+
+<!-- Open Graph / social previews -->
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://schnorr.systems/work/deal-desk-case-brief.html">
+<meta property="og:title" content="Deal Desk · Six Systems, One Pipeline — Steve Schnorr">
+<meta property="og:description" content="Built solo in 8 weeks across Salesforce, Django, Slack, Ironclad, Redshift, and Hightouch. First month: $5.3M processed, $1.1M leakage surfaced. Then I argued to pause it.">
+<meta property="og:site_name" content="schnorr.systems">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Deal Desk · Six Systems, One Pipeline">
+<meta name="twitter:description" content="Built solo in 8 weeks. Then I argued to pause it.">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23ede2cd'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Newsreader, Georgia, serif' font-size='40' font-weight='700' font-style='italic' fill='%237a2e1f'%3Es%3C/text%3E%3Ccircle cx='48' cy='44' r='3' fill='%237a2e1f'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #ddd0b8;
+    --paper-deep: #d4c5a8;
+    --surface: #e0d3bc;
+    --surface-soft: #e5d8c0;
+    --rule: #b8a890;
+    --rule-soft: #c8b8a0;
+    --rule-strong: #5e4828;
+    --grid: rgba(45, 38, 22, 0.025);
+    --grid-mid: rgba(45, 38, 22, 0.05);
+    --grid-major: rgba(45, 38, 22, 0.10);
+    --ink: #1a1612;
+    --ink-secondary: #2d2620;
+    --ink-muted: #5e5246;
+    --ink-faint: #8a7e68;
+    --accent: #7a2e1f;
+    --accent-deep: #5a1e10;
+    --accent-soft: #9c5040;
+    --accent-wash: #e8d0c4;
+    --accent-tint: #f0e1c8;
+    --brass: #876530;
+    --brass-soft: #b39056;
+    --gold: #b8860b;
+    --sage: #4a6040;
+    --sage-bg: #d4ddd2;
+    --target: #6e5a28;
+    --target-bg: #e0dac8;
+    --floor: #7a4a3a;
+    --floor-bg: #e2d8d0;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      linear-gradient(var(--grid-major) 1px, transparent 1px) 0 0 / 100% 120px,
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px) 0 0 / 120px 100%,
+      linear-gradient(var(--grid-mid) 1px, transparent 1px) 0 0 / 100% 30px,
+      linear-gradient(90deg, var(--grid-mid) 1px, transparent 1px) 0 0 / 30px 100%,
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 100% 10px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 10px 100%,
+      var(--paper);
+    color: var(--ink);
+    font-family: 'Inter Tight', -apple-system, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.1  0 0 0 0 0.06  0 0 0 0.55 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+    opacity: 0.04;
+    z-index: 100;
+    mix-blend-mode: multiply;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(58, 38, 22, 0.08) 100%);
+    z-index: 99;
+  }
+
+  a { color: var(--accent); text-decoration: none; transition: color 0.12s ease; }
+  a:hover { color: var(--accent-deep); }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0;
+    background: rgba(237, 226, 205, 0.94);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--rule-strong);
+    z-index: 50;
+    padding: 14px 32px;
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 16px;
+  }
+  .nav-brand {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700; font-size: 18px;
+    letter-spacing: -0.4px; color: var(--ink);
+  }
+  .nav-brand .dot { color: var(--accent); }
+  .nav-back {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.4px; color: var(--ink-secondary);
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .nav-back:hover { color: var(--accent-deep); }
+  .nav-back .arrow { transition: transform 0.12s ease; display: inline-block; }
+  .nav-back:hover .arrow { transform: translateX(-3px); }
+
+  /* LAYOUT */
+  .container { max-width: 880px; margin: 0 auto; padding: 0 32px; }
+  .container-wide { max-width: 1100px; margin: 0 auto; padding: 0 32px; }
+  section { padding: 80px 0 56px; }
+  section + section { border-top: 1px solid var(--rule); }
+
+  /* HERO */
+  .hero { padding: 80px 0 64px; border-bottom: 2px solid var(--rule-strong); }
+  .stamp-row {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 32px; flex-wrap: wrap;
+  }
+  .stamp {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 5px 12px;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    background: var(--paper);
+  }
+  .case-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    color: var(--ink-muted);
+  }
+  .hero h1 {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 64px; font-weight: 700;
+    letter-spacing: -2.4px; line-height: 0.98;
+    color: var(--ink); margin-bottom: 24px;
+    max-width: 880px;
+  }
+  .hero h1 .em {
+    font-style: italic; font-weight: 600;
+    color: var(--accent-deep);
+  }
+  .hero .deck {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 22px; font-style: italic; font-weight: 500;
+    line-height: 1.4; color: var(--ink-secondary);
+    max-width: 800px; margin-bottom: 24px;
+  }
+  .byline {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; color: var(--ink-muted);
+    letter-spacing: 0.3px;
+  }
+
+  /* SECTION HEADERS */
+  .section-header {
+    display: flex; align-items: baseline; gap: 18px;
+    margin-bottom: 36px; padding-bottom: 18px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .section-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic; font-size: 18px;
+    color: var(--accent); font-weight: 500;
+  }
+  .section-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 36px; font-weight: 700;
+    letter-spacing: -1.4px; color: var(--ink);
+    line-height: 1.05; flex: 1;
+  }
+  .section-title .em {
+    font-style: italic; font-weight: 600;
+    color: var(--accent-deep);
+  }
+
+  /* PROSE */
+  .prose { max-width: 720px; }
+  .prose p {
+    font-size: 17px; line-height: 1.65;
+    color: var(--ink-secondary); margin-bottom: 22px;
+  }
+  .prose p strong { color: var(--ink); font-weight: 600; }
+  .prose p em {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic; font-weight: 500; color: var(--ink);
+  }
+  .prose .pull {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 24px; font-style: italic; font-weight: 500;
+    line-height: 1.4; color: var(--accent-deep);
+    padding: 16px 24px;
+    border-left: 3px solid var(--accent);
+    background: rgba(232, 213, 184, 0.4);
+    margin: 28px 0; max-width: 720px;
+  }
+
+  /* BEFORE/AFTER */
+  .compare {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+    border: 1px solid var(--rule); margin: 28px 0;
+    background: var(--surface);
+  }
+  .compare-col {
+    padding: 24px 28px;
+    border-right: 1px solid var(--rule);
+  }
+  .compare-col:last-child {
+    border-right: none;
+    background: var(--accent-tint);
+  }
+  .compare-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--ink-muted); margin-bottom: 14px;
+  }
+  .compare-col:last-child .compare-label { color: var(--accent-deep); }
+  .compare ul { list-style: none; padding: 0; margin: 0; }
+  .compare li {
+    font-size: 14px; line-height: 1.5; color: var(--ink-secondary);
+    padding: 7px 0; padding-left: 22px;
+    border-bottom: 1px dashed var(--rule-soft);
+    position: relative;
+  }
+  .compare li:last-child { border-bottom: none; }
+  .compare li::before {
+    content: '—'; position: absolute; left: 0;
+    color: var(--ink-faint);
+  }
+  .compare-col:last-child li::before {
+    content: '✓'; color: var(--sage);
+  }
+
+  /* STEP FLOW */
+  .steps { margin: 36px 0 28px; }
+  .step {
+    display: grid; grid-template-columns: 64px 1fr; gap: 28px;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .step:first-child { padding-top: 8px; }
+  .step:last-child { border-bottom: none; }
+  .step-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 44px; font-weight: 600;
+    color: var(--accent); line-height: 1; padding-top: 2px;
+  }
+  .step-content { max-width: 720px; }
+  .step-row {
+    display: flex; align-items: baseline; gap: 12px;
+    margin-bottom: 10px; flex-wrap: wrap;
+  }
+  .step-title {
+    font-family: 'Inter', sans-serif;
+    font-size: 18px; font-weight: 700;
+    letter-spacing: -0.2px; color: var(--ink);
+  }
+  .step-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid var(--ink-muted);
+    color: var(--ink-muted);
+  }
+  .step-tag.auto { color: var(--sage); border-color: var(--sage); }
+  .step-tag.human { color: var(--accent); border-color: var(--accent); }
+  .step-body {
+    font-size: 15px; line-height: 1.55; color: var(--ink-secondary);
+    margin-bottom: 12px;
+  }
+  .step-stack {
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .stack-chip {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.4px;
+    padding: 3px 10px;
+    background: var(--surface-soft);
+    border: 1px solid var(--rule);
+    color: var(--ink-secondary);
+  }
+
+  /* LINE-ITEM EVALUATION CARDS */
+  .eval-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
+    margin: 40px 0;
+  }
+  @media (max-width: 900px) { .eval-grid { grid-template-columns: 1fr; } }
+
+  .eval-card {
+    background: var(--surface-soft);
+    border-left: 3px solid var(--rule-strong);
+    border-radius: 3px;
+    padding: 12px 14px;
+    box-shadow: 0 1px 2px rgba(107, 93, 78, 0.05);
+  }
+  .eval-card.within {
+    background: var(--sage-bg);
+    border-left-color: var(--sage);
+  }
+  .eval-card.below {
+    background: var(--target-bg);
+    border-left-color: var(--target);
+  }
+  .eval-card.exception {
+    background: var(--floor-bg);
+    border-left-color: var(--floor);
+  }
+
+  .eval-header {
+    display: flex; align-items: baseline; gap: 8px;
+    margin-bottom: 2px; flex-wrap: wrap;
+  }
+  .eval-status {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 1.1px; text-transform: uppercase;
+  }
+  .eval-card.within .eval-status { color: var(--sage); }
+  .eval-card.below .eval-status { color: var(--target); }
+  .eval-card.exception .eval-status { color: var(--floor); }
+  .eval-tag {
+    font-family: 'Inter', sans-serif;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 9999px;
+    background: rgba(237, 226, 205, 0.6);
+    color: var(--ink-muted);
+  }
+  .eval-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; color: var(--ink-secondary);
+    margin-bottom: 8px; line-height: 1.4;
+  }
+
+  .eval-position {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px; font-weight: 700;
+    color: var(--ink); margin-bottom: 0;
+    letter-spacing: -0.2px;
+  }
+  .eval-meta {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; color: var(--ink-muted);
+    margin-bottom: 8px;
+  }
+
+  .eval-table {
+    display: grid;
+    grid-template-columns: auto 1fr 1fr;
+    gap: 2px 14px;
+    padding: 6px 0;
+    border-top: 1px solid rgba(58, 38, 22, 0.12);
+    border-bottom: 1px solid rgba(58, 38, 22, 0.12);
+    margin-bottom: 6px;
+    align-items: center;
+  }
+  .eval-table.terms { grid-template-columns: auto 1fr; }
+  .eval-th {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .eval-row-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: 0.9px; text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .eval-value {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700;
+    color: var(--ink);
+  }
+  .eval-value.floor-text {
+    color: var(--floor);
+  }
+
+  .eval-note {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .eval-card.within .eval-note { color: var(--sage); }
+  .eval-card.below .eval-note { color: var(--target); }
+  .eval-card.exception .eval-note { color: var(--floor); }
+
+  .eval-rev {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px; color: var(--ink-muted);
+    margin-bottom: 8px; flex-wrap: wrap;
+  }
+  .eval-rev strong {
+    color: var(--ink); font-weight: 700;
+    font-size: 12px;
+  }
+  .eval-rev-dot {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--ink-faint);
+  }
+  .eval-rev-status {
+    font-family: 'Inter', sans-serif;
+    font-size: 8px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+  .eval-card.within .eval-rev-status { color: var(--sage); }
+  .eval-card.below .eval-rev-status { color: var(--target); }
+  .eval-card.exception .eval-rev-status { color: var(--floor); }
+
+  .eval-actions {
+    display: flex; gap: 6px;
+    justify-content: flex-end;
+  }
+  .eval-btn {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 600;
+    padding: 5px 11px;
+    border-radius: 3px;
+    border: 1px solid;
+    cursor: pointer;
+    letter-spacing: 0.1px;
+  }
+  .eval-btn.approve {
+    background: var(--sage); color: var(--paper);
+    border-color: var(--sage);
+  }
+  .eval-btn.reject {
+    background: var(--paper); color: var(--floor);
+    border-color: var(--rule);
+  }
+
+  /* FORECAST */
+  .forecast-card {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 28px 32px;
+    margin: 32px 0;
+    box-shadow: 0 1px 3px rgba(107, 93, 78, 0.06);
+  }
+  .fc-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 12px;
+    padding-bottom: 16px; border-bottom: 1px solid var(--rule);
+  }
+  .fc-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 22px; font-weight: 600;
+    color: var(--ink); letter-spacing: -0.4px;
+  }
+  .fc-shape {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.2px; text-transform: uppercase;
+    padding: 4px 12px; background: var(--accent-tint);
+    color: var(--accent-deep);
+    border: 1px solid var(--accent);
+  }
+  .fc-stats {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 18px; margin-bottom: 24px;
+  }
+  .fc-stat-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 28px; font-weight: 600;
+    color: var(--ink); letter-spacing: -1px;
+    line-height: 1; margin-bottom: 4px;
+  }
+  .fc-stat-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px; font-weight: 600;
+    letter-spacing: 0.6px; text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .fc-chart { margin: 16px 0 12px; }
+  .fc-note {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic; font-size: 14px;
+    color: var(--ink-muted); line-height: 1.5;
+  }
+
+  /* RESULTS */
+  .results-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0; border-top: 2px solid var(--rule-strong);
+    border-left: 1px solid var(--rule);
+    margin: 36px 0 20px;
+  }
+  .result {
+    padding: 26px 28px;
+    border-right: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    background: var(--paper-deep);
+  }
+  .result-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 40px; font-weight: 600;
+    letter-spacing: -1.4px; color: var(--ink);
+    line-height: 1; margin-bottom: 10px;
+  }
+  .result-num .em {
+    font-style: italic; color: var(--accent-deep);
+  }
+  .result-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 600;
+    letter-spacing: 0.4px; color: var(--ink-secondary);
+    line-height: 1.4;
+  }
+  @media (max-width: 720px) {
+    .results-grid { grid-template-columns: 1fr; }
+    .result-num { font-size: 30px; }
+    .fc-stats { grid-template-columns: 1fr 1fr; }
+  }
+
+  /* BUILD STATS */
+  .build-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 18px; margin: 24px 0 8px;
+  }
+  .build-card {
+    padding: 22px 24px;
+    background: var(--surface);
+    border-left: 3px solid var(--accent);
+  }
+  .build-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 44px; font-weight: 600;
+    color: var(--ink); letter-spacing: -1.4px;
+    line-height: 1; margin-bottom: 6px;
+  }
+  .build-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.6px; color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .build-detail {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic; font-size: 13px;
+    color: var(--ink-muted); line-height: 1.5;
+  }
+  @media (max-width: 720px) {
+    .build-grid { grid-template-columns: 1fr; }
+  }
+
+  /* STACK */
+  .stack-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin: 24px 0;
+  }
+  .stack-item {
+    padding: 8px 14px;
+    background: var(--surface-soft);
+    border: 1px solid var(--rule);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; color: var(--ink);
+    font-weight: 600;
+  }
+  .stack-item .role {
+    color: var(--ink-muted); font-weight: 400;
+    margin-left: 6px;
+  }
+
+  /* CLOSE */
+  .close { padding: 80px 0 60px; border-top: 2px solid var(--rule-strong); }
+  .close-eyebrow {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic; font-size: 17px;
+    color: var(--accent-deep); margin-bottom: 12px;
+  }
+  .close-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 44px; font-weight: 700;
+    letter-spacing: -1.8px; line-height: 1.05;
+    color: var(--ink); margin-bottom: 24px; max-width: 780px;
+  }
+  .close-title .em { font-style: italic; color: var(--accent-deep); }
+  .close-body {
+    font-size: 18px; line-height: 1.6;
+    color: var(--ink-secondary); max-width: 720px;
+    margin-bottom: 22px;
+  }
+  .next-up {
+    display: inline-block;
+    padding: 18px 22px;
+    background: var(--accent-tint);
+    border-left: 3px solid var(--accent);
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic; font-size: 17px;
+    color: var(--accent-deep);
+    margin: 18px 0 32px;
+    max-width: 720px;
+    line-height: 1.5;
+  }
+  .next-up strong {
+    font-family: 'Inter', sans-serif;
+    font-style: normal; font-weight: 700;
+    font-size: 10px; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--accent);
+    display: block; margin-bottom: 6px;
+  }
+  .close-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 13px 22px; background: var(--ink); color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 1.4px; text-transform: uppercase;
+    border: 1.5px solid var(--ink);
+    transition: all 0.15s ease;
+  }
+  .close-cta:hover {
+    background: var(--accent-deep); border-color: var(--accent-deep);
+    color: var(--paper);
+  }
+
+  footer {
+    padding: 36px 0 56px;
+    border-top: 1px solid var(--rule);
+    text-align: center;
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic; font-size: 14px;
+    color: var(--ink-muted);
+  }
+
+  /* MOBILE */
+  @media (max-width: 720px) {
+    nav { padding: 12px 22px; }
+    .container, .container-wide { padding: 0 22px; }
+    section { padding: 60px 0 44px; }
+    .hero { padding: 64px 0 48px; }
+    .hero h1 { font-size: 38px; letter-spacing: -1.4px; }
+    .hero .deck { font-size: 17px; }
+    .section-title { font-size: 26px; letter-spacing: -0.9px; }
+    .prose p { font-size: 16px; }
+    .prose .pull { font-size: 19px; padding: 14px 18px; }
+    .compare { grid-template-columns: 1fr; }
+    .compare-col { border-right: none; border-bottom: 1px solid var(--rule); }
+    .step { grid-template-columns: 1fr; gap: 12px; }
+    .step-num { font-size: 28px; }
+    .close-title { font-size: 28px; letter-spacing: -1px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="../index.html">schnorr<span class="dot">.</span>systems</a>
+    <a class="nav-back" href="../index.html"><span class="arrow">←</span> Back to portfolio</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="container-wide">
+    <div class="stamp-row">
+      <span class="stamp">Case Study · No. 01</span>
+      <span class="case-meta">Instawork · Commercial governance platform · 2024–present</span>
+    </div>
+    <h1>Six systems. One pipeline. Built solo in eight weeks — then I argued to <span class="em">pause</span> it.</h1>
+    <p class="deck">A commercial pricing engine across Salesforce, Django, Slack, Ironclad, Redshift, and Hightouch — shipped from architecture to production in eight weeks. First month: $5.3M processed, $1.1M in leakage surfaced. Then I made the case for the architectural rewrite that's reshaping our roadmap.</p>
+    <p class="byline">Steve Schnorr · Revenue Systems Architect · Instawork</p>
+  </div>
+</header>
+
+<!-- § I — THE BRIEF -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ I</span>
+      <h2 class="section-title">The <span class="em">brief</span>.</h2>
+    </div>
+    <div class="prose">
+      <p>Instawork runs a marketplace where businesses book hourly workers across the country. The commercial side of that business — pricing, approvals, contracts, exceptions — is where the most consequential decisions get made. Whether a deal is profitable. Whether a customer comes back. Whether the system can scale.</p>
+      <p>In March 2024 I joined as the solo RevOps engineer. The brief: build the system that governs how those decisions get made. Approvals, pricing rules, exception handling, the queue, the writeback, the measurement. End to end.</p>
+      <p>What I inherited was the opposite of a system. Pricing requests were submitted with no evaluation, no floor enforcement, and no structured routing. Managers reviewed them over Slack with no audit trail, no SLA, and no reliable way to confirm an approved rate ever made it into production.</p>
+    </div>
+
+    <div class="compare">
+      <div class="compare-col">
+        <div class="compare-label">Before</div>
+        <ul>
+          <li>Pricing decisions in Slack threads</li>
+          <li>No audit trail or approval record</li>
+          <li>No SLA — some deals waited days</li>
+          <li>Approved rates manually entered into Django</li>
+          <li>No floor enforcement or exception visibility</li>
+          <li>No forecast linkage to commercial decisions</li>
+        </ul>
+      </div>
+      <div class="compare-col">
+        <div class="compare-label">After</div>
+        <ul>
+          <li>Structured submission with pricing evaluation on intake</li>
+          <li>Full audit trail — every decision recorded</li>
+          <li>4-hour SLA with automated escalation</li>
+          <li>Approved rates sync to Django in real time</li>
+          <li>MSA terms auto-default from contract data</li>
+          <li>Every approved deal creates a forecast record</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- § II — SYSTEM ARCHITECTURE -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ II</span>
+      <h2 class="section-title">A deal, from request to <span class="em">revenue</span>.</h2>
+    </div>
+    <div class="prose">
+      <p>The pipeline runs across six systems with one human decision point. A deal enters as a sales request and exits as a live production rate, a forecast record, and a full audit trail.</p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">i.</div>
+        <div class="step-content">
+          <div class="step-row">
+            <div class="step-title">Rep submits a deal request</div>
+            <span class="step-tag">Guided</span>
+          </div>
+          <p class="step-body">The system pre-fills MSA terms, current rate card, and account history. Rep selects positions, markets, and proposed rates.</p>
+          <div class="step-stack">
+            <span class="stack-chip">Salesforce · Flow + LWC</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">ii.</div>
+        <div class="step-content">
+          <div class="step-row">
+            <div class="step-title">Auto-evaluation classifies the deal</div>
+            <span class="step-tag auto">Automated</span>
+          </div>
+          <p class="step-body">Apex evaluates every line against 51 state-specific pricing floors, 21 markup tiers, MSA rates, and payment terms — all driven by admin-configurable rules. About 41% of deals auto-approve instantly.</p>
+          <div class="step-stack">
+            <span class="stack-chip">Apex</span>
+            <span class="stack-chip">Custom Metadata</span>
+            <span class="stack-chip">Redshift</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">iii.</div>
+        <div class="step-content">
+          <div class="step-row">
+            <div class="step-title">Approver decides</div>
+            <span class="step-tag human">Human</span>
+          </div>
+          <p class="step-body">Non-standard deals appear in a triage-ready queue with exception size, dollar impact, and SLA timer. Exception severity determines routing — small exceptions to the sales manager; larger ones escalate to RevOps or Finance.</p>
+          <div class="step-stack">
+            <span class="stack-chip">LWC Queue</span>
+            <span class="stack-chip">Slack · #deal-desk</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">iv.</div>
+        <div class="step-content">
+          <div class="step-row">
+            <div class="step-title">Rate goes live in production</div>
+            <span class="step-tag auto">Automated</span>
+          </div>
+          <p class="step-body">On approval, Apex fires a REST callout to Django's <code style="font-family:'SF Mono', monospace; background:var(--surface-soft); padding:1px 5px; border-radius:2px; font-size:12px;">/approved-rates/</code> endpoint. Self-healing retry handles stale region IDs. The rate is live before the approver closes the tab.</p>
+          <div class="step-stack">
+            <span class="stack-chip">Apex Callout</span>
+            <span class="stack-chip">Django API</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">v.</div>
+        <div class="step-content">
+          <div class="step-row">
+            <div class="step-title">Notifications + audit trail</div>
+            <span class="step-tag auto">Automated</span>
+          </div>
+          <p class="step-body">Slack posts on submission, decision, and rate-is-live. Chatter logs every decision. Ironclad syncs contract status bidirectionally.</p>
+          <div class="step-stack">
+            <span class="stack-chip">Slack API</span>
+            <span class="stack-chip">Chatter</span>
+            <span class="stack-chip">Ironclad</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-num">vi.</div>
+        <div class="step-content">
+          <div class="step-row">
+            <div class="step-title">Forecast record created</div>
+            <span class="step-tag auto">Automated</span>
+          </div>
+          <p class="step-body">Every approved deal generates 90-day, 180-day, and 365-day revenue projections with a distribution shape. Actuals flow back from the data warehouse for deal-level variance tracking.</p>
+          <div class="step-stack">
+            <span class="stack-chip">Apex + Flow</span>
+            <span class="stack-chip">Redshift</span>
+            <span class="stack-chip">Hightouch</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- § III — DECISION SURFACE -->
+<section>
+  <div class="container-wide">
+    <div class="section-header">
+      <span class="section-num">§ III</span>
+      <h2 class="section-title">What the approver actually <span class="em">sees</span>.</h2>
+    </div>
+    <div class="container" style="padding:0;">
+      <div class="prose">
+        <p>The approval queue surfaces exception size, dollar impact, and SLA timer in one card. Each deal renders its own evaluation: which positions are within guardrails, which are below target, and which trigger an exception that requires human judgment.</p>
+        <p>Visual trust grammar throughout. Solid borders mean validated. Different status colors carry semantic weight — never red for "we don't know," always red for "below floor." Provenance pills show where each piece of context came from. Demo data shown.</p>
+      </div>
+    </div>
+
+    <div class="eval-grid">
+      <!-- TERMS EXCEPTION -->
+      <div class="eval-card exception">
+        <div class="eval-header">
+          <span class="eval-status">Terms Exception</span>
+          <span class="eval-tag">Payment</span>
+        </div>
+        <p class="eval-subtitle">Net 45 requested — policy is Net 30 for new customers</p>
+        <div class="eval-position">Payment Terms</div>
+        <div class="eval-meta">Sietch Tabr · New Customer · Needs VP sign-off</div>
+        <div class="eval-table terms">
+          <div class="eval-row-label">Requested</div>
+          <div class="eval-value">Net 45</div>
+          <div class="eval-row-label">Policy</div>
+          <div class="eval-value">Net 30</div>
+        </div>
+        <div class="eval-actions">
+          <button class="eval-btn approve">Approve Terms</button>
+          <button class="eval-btn reject">Deny</button>
+        </div>
+      </div>
+
+      <!-- WITHIN GUARDRAILS -->
+      <div class="eval-card within">
+        <div class="eval-header">
+          <span class="eval-status">Within Guardrails</span>
+        </div>
+        <p class="eval-subtitle">Rate and markup meet floor requirements</p>
+        <div class="eval-position">Line Cook</div>
+        <div class="eval-meta">Las Vegas · 8hr shifts · NV Tier 2</div>
+        <div class="eval-table">
+          <div></div>
+          <div class="eval-th">Submitted</div>
+          <div class="eval-th">Floor</div>
+          <div class="eval-row-label">Rate</div>
+          <div class="eval-value">$20.00/hr</div>
+          <div class="eval-value floor-text">$16.50/hr</div>
+          <div class="eval-row-label">Markup</div>
+          <div class="eval-value">35%</div>
+          <div class="eval-value floor-text">28%</div>
+        </div>
+        <div class="eval-note">Rate +$3.50 above floor · Markup +7pt</div>
+        <div class="eval-rev">
+          Rev <strong>$38,880</strong>
+          <span class="eval-rev-dot"></span>
+          <span class="eval-rev-status">Within Guardrails</span>
+        </div>
+        <div class="eval-actions">
+          <button class="eval-btn approve">Approve</button>
+          <button class="eval-btn reject">Reject</button>
+        </div>
+      </div>
+
+      <!-- BELOW TARGET -->
+      <div class="eval-card below">
+        <div class="eval-header">
+          <span class="eval-status">Below Target</span>
+          <span class="eval-tag">Markup</span>
+        </div>
+        <p class="eval-subtitle">Markup below target but above floor</p>
+        <div class="eval-position">Barista</div>
+        <div class="eval-meta">Las Vegas · 8hr shifts · NV Tier 2</div>
+        <div class="eval-table">
+          <div></div>
+          <div class="eval-th">Submitted</div>
+          <div class="eval-th">Floor</div>
+          <div class="eval-row-label">Rate</div>
+          <div class="eval-value">$19.00/hr</div>
+          <div class="eval-value floor-text">$15.50/hr</div>
+          <div class="eval-row-label">Markup</div>
+          <div class="eval-value">30%</div>
+          <div class="eval-value floor-text">28%</div>
+        </div>
+        <div class="eval-note">Markup 8pt below target (30% vs 38%)</div>
+        <div class="eval-rev">
+          Rev <strong>$11,880</strong>
+          <span class="eval-rev-dot"></span>
+          <span class="eval-rev-status">Below Target</span>
+        </div>
+        <div class="eval-actions">
+          <button class="eval-btn approve">Approve</button>
+          <button class="eval-btn reject">Reject</button>
+        </div>
+      </div>
+
+      <!-- APPROVED (within MSA) -->
+      <div class="eval-card within">
+        <div class="eval-header">
+          <span class="eval-status">Within Guardrails</span>
+          <span class="eval-tag">MSA-Aligned</span>
+        </div>
+        <p class="eval-subtitle">Rate matches CHOAM contract terms</p>
+        <div class="eval-position">Food Service Worker</div>
+        <div class="eval-meta">Arrakeen · 8hr shifts · Arrakis Tier 1</div>
+        <div class="eval-table">
+          <div></div>
+          <div class="eval-th">Submitted</div>
+          <div class="eval-th">Contract</div>
+          <div class="eval-row-label">Rate</div>
+          <div class="eval-value">$18.50/hr</div>
+          <div class="eval-value floor-text">$18.00/hr</div>
+          <div class="eval-row-label">Markup</div>
+          <div class="eval-value">45%</div>
+          <div class="eval-value floor-text">40%</div>
+        </div>
+        <div class="eval-note">Rate +$0.50 above contract · Markup +5pt</div>
+        <div class="eval-rev">
+          Rev <strong>$26,640</strong>
+          <span class="eval-rev-dot"></span>
+          <span class="eval-rev-status">Approved · Sent</span>
+        </div>
+        <div class="eval-actions">
+          <button class="eval-btn approve">✓ Sent to production</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- § IV — FORECAST -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ IV</span>
+      <h2 class="section-title">Every approved deal becomes a <span class="em">forecast</span>.</h2>
+    </div>
+    <div class="prose">
+      <p>Approval triggers 90-day and 365-day net revenue projections automatically. The account executive draws a distribution shape — ramp, steady, frontloaded, spike — that becomes the basis for cohort analysis and variance tracking as actuals flow back from the data warehouse.</p>
+    </div>
+
+    <div class="forecast-card">
+      <div class="fc-head">
+        <div>
+          <div class="fc-title">Atreides Spice Operations — Arrakeen</div>
+          <div style="font-family:'Newsreader', serif; font-style:italic; font-size:13px; color:var(--ink-muted); margin-top:2px;">Approved · Mar 25 · AO-Arrakeen-Q2</div>
+        </div>
+        <span class="fc-shape">Ramp</span>
+      </div>
+
+      <div class="fc-stats">
+        <div>
+          <div class="fc-stat-num">$91,066</div>
+          <div class="fc-stat-label">90-Day NR</div>
+        </div>
+        <div>
+          <div class="fc-stat-num">$173,025</div>
+          <div class="fc-stat-label">365-Day NR</div>
+        </div>
+        <div>
+          <div class="fc-stat-num">440</div>
+          <div class="fc-stat-label">Shifts / mo</div>
+        </div>
+        <div>
+          <div class="fc-stat-num">13 · 27 · 60</div>
+          <div class="fc-stat-label">Month 1 · 2 · 3 (shifts/day)</div>
+        </div>
+      </div>
+
+      <div class="fc-chart">
+        <svg viewBox="0 0 600 140" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rampFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#7a2e1f" stop-opacity="0.32"/>
+              <stop offset="100%" stop-color="#7a2e1f" stop-opacity="0.05"/>
+            </linearGradient>
+          </defs>
+          <!-- Axis -->
+          <line x1="40" y1="120" x2="580" y2="120" stroke="#c9bfb2" stroke-width="1"/>
+          <!-- Ramp shape filled -->
+          <path d="M 40 120 L 40 110 L 130 92 L 220 70 L 310 50 L 400 38 L 490 30 L 580 26 L 580 120 Z" fill="url(#rampFill)"/>
+          <!-- Ramp line -->
+          <path d="M 40 110 L 130 92 L 220 70 L 310 50 L 400 38 L 490 30 L 580 26" stroke="#7a2e1f" stroke-width="2" fill="none"/>
+          <!-- Month markers -->
+          <text x="40" y="135" font-family="Inter" font-size="10" fill="#6b5a44" text-anchor="middle">M1</text>
+          <text x="130" y="135" font-family="Inter" font-size="10" fill="#6b5a44" text-anchor="middle">M2</text>
+          <text x="220" y="135" font-family="Inter" font-size="10" fill="#6b5a44" text-anchor="middle">M3</text>
+          <text x="310" y="135" font-family="Inter" font-size="10" fill="#6b5a44" text-anchor="middle">M4</text>
+          <text x="400" y="135" font-family="Inter" font-size="10" fill="#6b5a44" text-anchor="middle">M5</text>
+          <text x="490" y="135" font-family="Inter" font-size="10" fill="#6b5a44" text-anchor="middle">M6</text>
+          <text x="580" y="135" font-family="Inter" font-size="10" fill="#6b5a44" text-anchor="middle">M7</text>
+        </svg>
+      </div>
+
+      <p class="fc-note">Ramp shape — revenue grows month-over-month as crew volume scales. Most enterprise food &amp; beverage deals cluster near this distribution. Shape accuracy becomes a signal over time across reps, deal types, and markets.</p>
+    </div>
+  </div>
+</section>
+
+<!-- § V — BUILD AND RESULTS -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ V</span>
+      <h2 class="section-title">Solo build. AI as <span class="em">force multiplier</span>.</h2>
+    </div>
+    <div class="prose">
+      <p>I designed the architecture, made every integration decision, and shipped the platform with Cursor and Claude as development co-pilots. The AI wrote Apex, scaffolded tests, debugged callout failures. I focused on system design, stakeholder alignment, and production operations.</p>
+    </div>
+
+    <div class="build-grid">
+      <div class="build-card">
+        <div class="build-num">58</div>
+        <div class="build-label">Apex Classes</div>
+        <div class="build-detail">Services, controllers, batch jobs — plus full test coverage. 8 weeks to production.</div>
+      </div>
+      <div class="build-card">
+        <div class="build-num">53</div>
+        <div class="build-label">LWC Components</div>
+        <div class="build-detail">Queue, detail views, exception summaries, forecast cards, Slack thread viewers.</div>
+      </div>
+      <div class="build-card">
+        <div class="build-num">6</div>
+        <div class="build-label">System Integrations</div>
+        <div class="build-detail">Salesforce, Django, Slack, Ironclad, Redshift, Hightouch — wired without manual handoffs.</div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:36px;">
+      <p style="font-family:'Newsreader', Georgia, serif; font-size:22px; font-style:italic; font-weight:500; color:var(--ink); margin-bottom:4px;">First month in production.</p>
+    </div>
+
+    <div class="results-grid">
+      <div class="result">
+        <div class="result-num"><span class="em">$5.3M</span></div>
+        <div class="result-label">Forecasted spend processed</div>
+      </div>
+      <div class="result">
+        <div class="result-num"><span class="em">$2.6M</span></div>
+        <div class="result-label">Approved and priced</div>
+      </div>
+      <div class="result">
+        <div class="result-num"><span class="em">260</span></div>
+        <div class="result-label">Rate lines pushed to production</div>
+      </div>
+      <div class="result">
+        <div class="result-num"><span class="em">41%</span></div>
+        <div class="result-label">Auto-approved, zero human delay</div>
+      </div>
+      <div class="result">
+        <div class="result-num"><span class="em">$1.1M</span></div>
+        <div class="result-label">Revenue leakage surfaced</div>
+      </div>
+      <div class="result">
+        <div class="result-num"><span class="em">8 wks</span></div>
+        <div class="result-label">First commit to production</div>
+      </div>
+    </div>
+
+    <div class="prose">
+      <p>Every approved rate reaches production without human data entry. Full audit trail from request to live rate. No tribal knowledge required.</p>
+    </div>
+  </div>
+</section>
+
+<!-- § VI — WHAT SURFACED -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ VI</span>
+      <h2 class="section-title">What surfaced <span class="em">after</span> launch.</h2>
+    </div>
+    <div class="prose">
+      <p>The system worked. It would have kept working. The next chapter of the story is the one most case studies leave out.</p>
+      <p>For a commercial decision to clear automatically, the system needs to know everything that's been previously agreed: the master agreement terms, the negotiated rates, the payment schedule, the rebate triggers, the state-level cost overrides. All of it. Cleanly. With database-level guarantees.</p>
+      <p>What I inherited was the opposite. The contract data that determines whether a deal can auto-clear lived across <strong>four separate systems</strong>: contract management (Ironclad), finance spreadsheets, Salesforce, and Slack DMs between the Deal Desk reviewer and account owners.</p>
+      <p>A reviewer evaluating a single deal would hunt across all four sources to assemble the picture. The reviewers were doing what a system should do: reconciling fragmented data so a decision could be made.</p>
+      <p>Most of the data needed for auto-approval already lived in our Django backend's contract entity. The rest was scattered across the four other sources. The 41% auto-approval rate was real, but the ceiling on it wasn't on the Salesforce side I was building. It was upstream, in the foundation.</p>
+      <p class="pull">The gap wasn't on the surface I was building. It was in the foundation underneath it.</p>
+      <p>That distinction matters. If the gap were on the Salesforce side, I would have kept adding rules, exceptions, and policy modules. That's the natural move for a builder — keep building. But the gap wasn't there. It was upstream, in the backend, in how contract data was modeled and stored. No amount of Salesforce work would close it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- § VII — THE ARGUMENT -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ VII</span>
+      <h2 class="section-title">The architectural <span class="em">argument</span>.</h2>
+    </div>
+    <div class="prose">
+      <p>The most useful thing I could do at this point was the least comfortable thing I could do: stop building and surface the problem.</p>
+      <p>I wrote up the data architecture problem, the cost of working around it, and the proposed reshape. I named the trade-off plainly. The work I'd been doing could keep going, with marginal returns and accumulating workarounds. Or the engineering team could take on a focused refactor of the contract data model, and the Salesforce side would benefit immediately and permanently.</p>
+      <p>I made the case for pausing Deal Desk and prioritizing the refactor. The decision wasn't mine to make — but the case was mine to make well.</p>
+      <p>Leadership agreed. Deal Desk got paused. Product engineering reallocated to the rewrite. The new architecture defines our product roadmap for the next phase.</p>
+      <p class="pull">A builder who keeps building on a broken foundation is rewarded for visible output and punished by the system they create. A builder who surfaces the foundation problem is rewarded by the system that comes after.</p>
+      <p>This was the move that's hardest to fit on a resume. There's no metric for "the right architectural argument made at the right time." It only shows up later, in the work that becomes possible because the foundation got fixed.</p>
+    </div>
+  </div>
+</section>
+
+<!-- § VIII — NOW AND THE HONEST DYNAMIC -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ VIII</span>
+      <h2 class="section-title">Beneficiary and <span class="em">casualty</span>.</h2>
+    </div>
+    <div class="prose">
+      <p>Here's the part most case studies leave out.</p>
+      <p>When auto-approval works for matched-contract deals, the Deal Desk function I built <em>changes shape</em>. The volume that justified a dedicated team falls to the residual cases that require genuine human judgment: non-standard terms, new partner agreements, edge cases the rules can't yet encode.</p>
+      <p>The honest question now is: <strong>what does Deal Desk look like when the system absorbs the volume?</strong> Is the residual workload enough to justify a dedicated team, or does it become a part-time responsibility within a broader role? What decisions can never be encoded as rules and therefore survive automation indefinitely?</p>
+      <p>The dynamic is real: <em>I'm optimizing the system in a way that reduces the scope of the function I built it to serve.</em> That's the right move for the company. It's a less obvious move for the person who built it.</p>
+      <p>I am explicit about this trade-off. Companies hiring senior commercial engineers should want people who will absorb their own function into the system rather than entrench it. The signal is the willingness to make that argument.</p>
+    </div>
+
+    <div class="prose" style="margin-top:32px;">
+      <p style="font-family:'Newsreader', Georgia, serif; font-size:22px; font-style:italic; font-weight:500; color:var(--ink); margin-bottom:14px;">Where we are now.</p>
+      <p>The refactor is in progress. Engineering has reallocated to the contract entity rewrite. Deal Desk work is paused except for production support.</p>
+      <p>The work I'm doing during the pause is the supporting architecture: writing the Salesforce side companion specs, mapping the Hightouch sync, defining the transition strategy, working through the persona-based process changes that will land when the new system goes live. The path to MSA-matched deals auto-approving at the correct contracted rates without human intervention is the milestone. Everything before it is preparation.</p>
+    </div>
+  </div>
+</section>
+
+<!-- § IX — STACK -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">§ IX</span>
+      <h2 class="section-title">What's under the <span class="em">hood</span>.</h2>
+    </div>
+    <div class="stack-list">
+      <span class="stack-item">Salesforce <span class="role">· Platform</span></span>
+      <span class="stack-item">Apex <span class="role">· Backend</span></span>
+      <span class="stack-item">Lightning Web Components <span class="role">· Frontend</span></span>
+      <span class="stack-item">Flows <span class="role">· Orchestration</span></span>
+      <span class="stack-item">Django <span class="role">· Rate API</span></span>
+      <span class="stack-item">Slack API <span class="role">· Notifications</span></span>
+      <span class="stack-item">Ironclad <span class="role">· Contracts</span></span>
+      <span class="stack-item">Redshift <span class="role">· Data Warehouse</span></span>
+      <span class="stack-item">Hightouch <span class="role">· Reverse ETL</span></span>
+      <span class="stack-item">Cursor <span class="role">· AI Development</span></span>
+      <span class="stack-item">Claude <span class="role">· AI Agent</span></span>
+      <span class="stack-item">MCP <span class="role">· Tool Protocol</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- CLOSE -->
+<section class="close">
+  <div class="container">
+    <div class="close-eyebrow">What I take from this</div>
+    <h2 class="close-title">The build keeps mattering. The <span class="em">argument</span> for the build matters too.</h2>
+    <p class="close-body">The system kept working. It would have kept working for another year on the foundation it was on. Surfacing the architectural debt cost short-term velocity to buy permanent foundation. The argument was mine to make. The decision wasn't.</p>
+    <p class="close-body">The work I want to do next is on systems where both halves are explicit. Where the case for what to build, why, and when to stop is part of the engineering, not a separate conversation that happens elsewhere.</p>
+
+    <div class="next-up">
+      <strong>What's next</strong>
+      A RevOps prioritization engine — applying the decision-surface design language to RevOps work itself. What to build next, why it matters, and what to deprioritize. In progress.
+    </div>
+
+    <a class="close-cta" href="../index.html">Back to portfolio →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    Schnorr Systems · MMXXVI · Built to last. Updated as the work changes.
+  </div>
+</footer>
+
+</body>
+</html>

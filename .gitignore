@@ -1,0 +1,18 @@
+# Iteration / comparison files — kept locally, excluded from production deploy
+aesthetic-compare.html
+color-compare.html
+plaid-compare.html
+v3-dune.html
+vintage-modern.html
+sprint-typo-palette.html
+sprint-d-variations.html
+
+# Outdated drafts
+work/instawork.html
+
+# OS / editor noise
+.DS_Store
+.vscode/
+.idea/
+*.swp
+node_modules/

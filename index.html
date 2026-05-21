@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steve Schnorr · Revenue Systems Architect</title>
+<meta name="description" content="Building revenue systems with strategy in the same file. Solo-built commercial governance platform processing $5.3M+ in deals.">
+
+<!-- Open Graph / social previews -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://schnorr.systems/">
+<meta property="og:title" content="Steve Schnorr · Revenue Systems Architect">
+<meta property="og:description" content="Building revenue systems with strategy in the same file. Solo-built commercial governance platform processing $5.3M+ in deals.">
+<meta property="og:site_name" content="schnorr.systems">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Steve Schnorr · Revenue Systems Architect">
+<meta name="twitter:description" content="Building revenue systems with strategy in the same file.">
+
+<!-- Favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23ede2cd'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Newsreader, Georgia, serif' font-size='40' font-weight='700' font-style='italic' fill='%237a2e1f'%3Es%3C/text%3E%3Ccircle cx='48' cy='44' r='3' fill='%237a2e1f'/%3E%3C/svg%3E">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* Paper — lighter cream, refined */
+    --paper: #ddd0b8;
+    --paper-deep: #d4c5a8;
+    --paper-soft: #e5d8c0;
+
+    /* Grid — denser 3-tier */
+    --grid: rgba(45, 38, 22, 0.025);
+    --grid-mid: rgba(45, 38, 22, 0.05);
+    --grid-major: rgba(45, 38, 22, 0.10);
+
+    /* Ink */
+    --ink: #1a1612;
+    --ink-secondary: #2d2620;
+    --ink-muted: #5e5246;
+    --ink-faint: #8a7e68;
+
+    /* Rules */
+    --rule: #b8a682;
+    --rule-soft: #cebd97;
+    --rule-strong: #5e4828;
+
+    /* Accent: oxblood / burgundy seal */
+    --accent: #7a2e1f;
+    --accent-deep: #5a1e10;
+    --accent-soft: #9c5040;
+    --accent-wash: #e8d0c4;
+
+    /* Brass highlight */
+    --brass: #876530;
+    --brass-soft: #b39056;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    /* Engineered 3-tier alignment grid */
+    background:
+      linear-gradient(var(--grid-major) 1px, transparent 1px) 0 0 / 100% 120px,
+      linear-gradient(90deg, var(--grid-major) 1px, transparent 1px) 0 0 / 120px 100%,
+      linear-gradient(var(--grid-mid) 1px, transparent 1px) 0 0 / 100% 30px,
+      linear-gradient(90deg, var(--grid-mid) 1px, transparent 1px) 0 0 / 30px 100%,
+      linear-gradient(var(--grid) 1px, transparent 1px) 0 0 / 100% 10px,
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 10px 100%,
+      var(--paper);
+    color: var(--ink);
+    font-family: 'Inter Tight', -apple-system, system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Subtle paper grain */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.15  0 0 0 0 0.1  0 0 0 0 0.06  0 0 0 0.55 0'/></filter><rect width='240' height='240' filter='url(%23n)'/></svg>");
+    opacity: 0.04;
+    z-index: 100;
+    mix-blend-mode: multiply;
+  }
+
+  /* Vignette - subtle aged-paper edges */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(58, 38, 22, 0.08) 100%);
+    z-index: 99;
+  }
+
+  a { color: var(--accent); text-decoration: none; transition: color 0.12s ease; }
+  a:hover { color: var(--accent-deep); }
+
+  /* ============ NAV ============ */
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(241, 232, 211, 0.94);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-bottom: 2px solid var(--rule-strong);
+    z-index: 50;
+    padding: 14px 32px;
+  }
+  .nav-inner {
+    max-width: 1040px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .nav-brand {
+    font-family: 'Inter Tight', sans-serif;
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: -0.4px;
+    color: var(--ink);
+  }
+  .nav-brand .dot {
+    color: var(--accent);
+  }
+  .nav-links {
+    display: flex;
+    gap: 28px;
+  }
+  .nav-links a {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-secondary);
+    letter-spacing: 0.2px;
+    position: relative;
+  }
+  .nav-links a:hover {
+    color: var(--accent-deep);
+  }
+
+  /* ============ LAYOUT ============ */
+  .container {
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  section {
+    padding: 96px 0 64px;
+    position: relative;
+  }
+  section + section {
+    border-top: 2px solid var(--rule-strong);
+  }
+
+  /* ============ HERO ============ */
+  .hero {
+    padding: 96px 0 80px;
+    position: relative;
+  }
+  .hero-corner {
+    position: absolute;
+    top: 24px; right: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.2px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    z-index: 3;
+  }
+  .hero-corner .sep { margin: 0 6px; opacity: 0.55; }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 32px;
+    right: 32px;
+    max-width: calc(1040px - 64px);
+    margin: 0 auto;
+    height: 2px;
+    background: var(--rule-strong);
+  }
+  .stamp-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+  }
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 12px;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    background: var(--paper);
+  }
+  .stamp .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .meta-line {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    color: var(--ink-muted);
+  }
+  .hero h1 {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 64px;
+    font-weight: 700;
+    letter-spacing: -2.4px;
+    line-height: 1.0;
+    color: var(--ink);
+    margin-bottom: 28px;
+    max-width: 900px;
+  }
+  .hero h1 .em {
+    font-style: italic;
+    font-weight: 600;
+    color: var(--accent-deep);
+  }
+  .hero .lead {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--ink-secondary);
+    max-width: 720px;
+    margin-bottom: 28px;
+  }
+  .proof-strip {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(232, 213, 184, 0.5);
+    border-left: 3px solid var(--accent);
+    border-radius: 2px;
+    max-width: 800px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .proof-label {
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    white-space: nowrap;
+  }
+  .proof-text {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .proof-num {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    color: var(--ink);
+    background: var(--paper);
+    padding: 1px 6px;
+    border-radius: 2px;
+    border: 1px solid var(--rule);
+  }
+  .hero .cta-row {
+    margin-top: 24px;
+    display: flex;
+    gap: 22px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .cta-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    color: var(--ink-secondary);
+    padding-bottom: 1px;
+    border-bottom: 1px solid var(--rule);
+    transition: all 0.15s ease;
+  }
+  .cta-text:hover {
+    color: var(--accent-deep);
+    border-bottom-color: var(--accent-deep);
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 13px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    transition: all 0.15s ease;
+    border: 1.5px solid transparent;
+  }
+  .cta.primary {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .cta.primary:hover {
+    background: var(--accent-deep);
+    border-color: var(--accent-deep);
+    color: var(--paper);
+  }
+  .cta.secondary {
+    background: transparent;
+    color: var(--ink);
+    border-color: var(--rule-strong);
+  }
+  .cta.secondary:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .cta .arrow { transition: transform 0.15s ease; }
+  .cta:hover .arrow { transform: translateX(3px); }
+
+  /* ============ SECTION HEADERS ============ */
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 48px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 18px;
+  }
+  .section-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .section-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 42px;
+    font-weight: 700;
+    letter-spacing: -1.6px;
+    color: var(--ink);
+    line-height: 1.05;
+    flex: 1;
+  }
+  .section-title .em {
+    font-style: italic;
+    font-weight: 600;
+  }
+  .section-sub {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-muted);
+    white-space: nowrap;
+  }
+
+  /* ============ WORK ============ */
+  .work-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .work-item {
+    padding: 36px 0 40px;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .work-item:first-child { padding-top: 12px; }
+  .work-item:last-child { border-bottom: none; }
+  .work-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+  }
+  .work-org {
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    color: var(--ink);
+  }
+  .work-date {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  .work-status {
+    font-family: 'Inter', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: var(--paper);
+  }
+  .work-status.archive {
+    border-color: var(--ink-muted);
+    color: var(--ink-muted);
+  }
+  .work-title {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 38px;
+    font-weight: 600;
+    letter-spacing: -1.2px;
+    color: var(--ink);
+    margin-bottom: 22px;
+    line-height: 1.1;
+    max-width: 720px;
+  }
+  .work-frame {
+    font-size: 17px;
+    color: var(--ink-secondary);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    max-width: 760px;
+  }
+  .work-receipts {
+    font-size: 14px;
+    color: var(--ink-muted);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    max-width: 760px;
+    padding-left: 14px;
+    border-left: 2px solid var(--brass-soft);
+  }
+  .work-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    padding-bottom: 2px;
+    border-bottom: 1.5px solid var(--accent);
+  }
+  .work-link:hover {
+    color: var(--ink);
+    border-bottom-color: var(--ink);
+  }
+
+  /* ============ PRINCIPLES ============ */
+  .principles-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--rule);
+    border-left: 1px solid var(--rule);
+  }
+  .principle {
+    padding: 28px 32px;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+    background: var(--paper-soft);
+  }
+  .principle-num {
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .principle-text {
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 21px;
+    line-height: 1.3;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.3px;
+  }
+
+  /* ============ CONTACT ============ */
+  .contact-block {
+    padding: 28px 0 16px;
+  }
+  .contact-body {
+    font-size: 18px;
+    line-height: 1.55;
+    color: var(--ink-secondary);
+    margin-bottom: 32px;
+    max-width: 700px;
+  }
+  .contact-row {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    padding: 44px 0 64px;
+    border-top: 2px solid var(--rule-strong);
+    text-align: center;
+    font-family: 'Inter Tight', sans-serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--ink-muted);
+  }
+  footer .seal {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 8px 16px;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    font-family: 'Inter', sans-serif;
+    font-style: normal;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+
+  /* ============ LAPTOP (13" ~1280-1440) ============ */
+  @media (max-width: 1440px) {
+    .hero { padding: 80px 0 64px; }
+    .hero h1 { font-size: 72px; letter-spacing: -2.6px; }
+  }
+  @media (max-width: 1200px) {
+    .hero h1 { font-size: 64px; letter-spacing: -2.4px; }
+    .section-title { font-size: 36px; }
+    .work-title { font-size: 34px; }
+  }
+
+  /* ============ MOBILE ============ */
+  @media (max-width: 720px) {
+    nav { padding: 12px 22px; }
+    .nav-links { gap: 18px; }
+    .nav-links a { font-size: 13px; }
+    .container { padding: 0 22px; }
+    section { padding: 64px 0 48px; }
+    .hero { padding: 56px 0 48px; }
+    .hero h1 { font-size: 44px; letter-spacing: -1.6px; }
+    .hero .lead { font-size: 16px; }
+    .proof-strip { padding: 12px 14px; gap: 8px; }
+    .proof-text { font-size: 13px; }
+    .section-header { flex-wrap: wrap; gap: 8px; }
+    .section-title { font-size: 30px; letter-spacing: -1px; }
+    .work-title { font-size: 28px; letter-spacing: -0.9px; }
+    .work-frame { font-size: 16px; }
+    .principles-grid { grid-template-columns: 1fr; }
+    .principle-text { font-size: 18px; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top">schnorr<span class="dot">.</span>systems</a>
+    <div class="nav-links">
+      <a href="#work">Work</a>
+      <a href="#principles">Principles</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-corner">◢ SS<span class="sep">·</span>01<span class="sep">·</span>2026</div>
+  <div class="container">
+    <div class="stamp-row">
+      <span class="stamp"><span class="dot"></span> Open to conversations</span>
+      <span class="meta-line">Steve Schnorr · Revenue Systems Architect</span>
+    </div>
+    <h1>Building revenue systems with <span class="em">strategy</span> in the same file.</h1>
+    <p class="lead">I build commercial systems. I write the strategy that explains why they matter. I do both at depth because builders who can't think strategically build tools nobody adopts, and strategists who can't ship code recommend things that never get built.</p>
+    <div class="cta-row">
+      <a class="cta primary" href="#work">The work <span class="arrow">→</span></a>
+      <a class="cta-text" href="mailto:steven.w.schnorr@gmail.com">or get in touch →</a>
+    </div>
+  </div>
+</header>
+
+<section id="work">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">i.</span>
+      <h2 class="section-title">Selected <span class="em">work</span>.</h2>
+      <span class="section-sub">Three artifacts</span>
+    </div>
+
+    <div class="work-list">
+      <div class="work-item">
+        <div class="work-meta">
+          <span class="work-org">Instawork</span>
+          <span class="work-date">2024 — present</span>
+          <span class="work-status">Live</span>
+        </div>
+        <h3 class="work-title">Six systems. One pipeline. Built solo in 8 weeks — then I argued to pause it.</h3>
+        <p class="work-frame">A commercial pricing engine across Salesforce, Django, Slack, Ironclad, Redshift, and Hightouch. Shipped from architecture to production in eight weeks. Then I made the case for the architectural rewrite that's reshaping our roadmap.</p>
+        <p class="work-receipts">58 Apex classes, 53 Lightning Web Components, 6 system integrations. First month: $5.3M forecasted spend processed, $2.6M approved and priced, 41% auto-approved without human delay, $1.1M in revenue leakage surfaced. The full build, the architectural call, and the honest dynamic of optimizing yourself out of a job.</p>
+        <a class="work-link" href="work/deal-desk-case-brief.html">Read the case study →</a>
+      </div>
+
+      <div class="work-item">
+        <div class="work-meta">
+          <span class="work-org">Scribe</span>
+          <span class="work-date">April 2026</span>
+          <span class="work-status archive">Case study</span>
+        </div>
+        <h3 class="work-title">Earned Motions.</h3>
+        <p class="work-frame">Hypothesis-driven analysis of 50 accounts. Five plays (Expand, Convert, Reclaim, Displace, Activate) that earn their way into a Capture / Optimize / Scale maturity matrix. Built as an interactive web presentation, not slides.</p>
+        <p class="work-receipts">SVG Sankey diagrams, scroll-driven matrices, decision cards with inline micro-visualizations. Clay and Dust integration detail. Internal sharing reached 15 viewers and 93 views before the interview. Core theses: "Don't scale what you haven't proven" and "If it's not feeding a human decision, it's waste."</p>
+        <a class="work-link" href="https://presentation-bice-psi.vercel.app" target="_blank" rel="noopener">View the case study →</a>
+      </div>
+
+      <div class="work-item">
+        <div class="work-meta">
+          <span class="work-org">LinkedIn</span>
+          <span class="work-date">2026</span>
+          <span class="work-status archive">Essay</span>
+        </div>
+        <h3 class="work-title">We Replaced Slack-Based Deal Approvals With a Governance Engine.</h3>
+        <p class="work-frame">An account of how a fragmented Slack-based approval process became an auditable governance system. About what changes when commercial decisions get the same rigor as engineering decisions.</p>
+        <p class="work-receipts">~950 words. Covers the architecture without naming internal people. References Salesforce, Django, Ironclad, and Hightouch as products. The thesis: governance isn't a control layer, it's a design surface.</p>
+        <a class="work-link" href="https://www.linkedin.com/feed/update/urn:li:activity:7454978124594946048/" target="_blank" rel="noopener">Read on LinkedIn →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="principles">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">ii.</span>
+      <h2 class="section-title">How I <span class="em">think</span>.</h2>
+      <span class="section-sub">Six principles</span>
+    </div>
+    <div class="principles-grid">
+      <div class="principle">
+        <div class="principle-num">i.</div>
+        <p class="principle-text">The system holds context so the human holds intent.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">ii.</div>
+        <p class="principle-text">Truth over urgency. Calm interfaces build trust.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">iii.</div>
+        <p class="principle-text">Config holds policy, surfaces serve judgment, automation connects both.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">iv.</div>
+        <p class="principle-text">A platform is only as real as its second implementation.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">v.</div>
+        <p class="principle-text">Every recommendation cites data. RevOps should operate like a research function.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">vi.</div>
+        <p class="principle-text">If it's not feeding a human decision, it's waste.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="container">
+    <div class="section-header">
+      <span class="section-num">iii.</span>
+      <h2 class="section-title"><span class="em">Hire</span> me.</h2>
+      <span class="section-sub">By appointment</span>
+    </div>
+    <div class="contact-block">
+      <p class="contact-body">Senior Manager, Director, Revenue Systems Architect, or GTM Engineer at a company where revenue operations is treated as a strategic function. Remote or Scottsdale hybrid. Builder and strategist roles only.</p>
+      <p class="contact-body" style="margin-top: -16px; font-style: italic; color: var(--ink-muted); font-size: 16px;">A first conversation usually covers: what you're trying to build, what's currently broken, and whether the kind of system thinking I do is what you actually need.</p>
+      <div class="contact-row">
+        <a class="cta primary" href="mailto:steven.w.schnorr@gmail.com">steven.w.schnorr@gmail.com</a>
+        <a class="cta secondary" href="https://linkedin.com/in/stevenwschnorr" target="_blank" rel="noopener">LinkedIn <span class="arrow">→</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="seal">Schnorr · Systems · MMXXVI</div>
+    <div>Built to last. Updated as the work changes.</div>
+  </div>
+</footer>
+
+</body>
+</html>
