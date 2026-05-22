@@ -578,6 +578,89 @@
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
   }
+
+  /* ============ ANIMATIONS ============
+     Three on-brand motions. Mechanical, not floaty.
+     All gated behind no-preference so reduced-motion users see static states. */
+  @media (prefers-reduced-motion: no-preference) {
+
+    /* 1. Status LED — breath + revolving inner highlight */
+    .stamp .dot {
+      position: relative;
+      overflow: hidden;
+      animation: ledBreathe 3s ease-in-out infinite;
+    }
+    .stamp .dot::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.65) 0%, transparent 55%);
+      animation: ledRevolve 6s linear infinite;
+      transform-origin: center;
+      pointer-events: none;
+    }
+    @keyframes ledBreathe {
+      0%, 100% {
+        opacity: 1;
+        box-shadow: 0 0 0 0 rgba(122, 46, 31, 0.35);
+      }
+      50% {
+        opacity: 0.82;
+        box-shadow: 0 0 0 4px rgba(122, 46, 31, 0);
+      }
+    }
+    @keyframes ledRevolve {
+      to { transform: rotate(360deg); }
+    }
+
+    /* 2. Mechanical hero reveal — staggered slot-up + ink-landing on italic */
+    .hero .stamp-row,
+    .hero h1,
+    .hero .lead,
+    .hero .cta-row {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    .hero .stamp-row {
+      animation: heroSlot 0.26s cubic-bezier(0.2, 0.6, 0.3, 1) 0s forwards;
+    }
+    .hero h1 {
+      transform: translateY(12px);
+      animation: heroSlot 0.36s cubic-bezier(0.2, 0.6, 0.3, 1) 0.08s forwards;
+    }
+    .hero .lead {
+      animation: heroSlot 0.3s cubic-bezier(0.2, 0.6, 0.3, 1) 0.22s forwards;
+    }
+    .hero .cta-row {
+      transform: translateY(4px);
+      animation: heroSlot 0.22s cubic-bezier(0.2, 0.6, 0.3, 1) 0.36s forwards;
+    }
+    @keyframes heroSlot {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    /* Italic "strategy" — ink lands a beat after the word */
+    .hero h1 .em {
+      color: var(--ink);
+      animation: inkLand 0.42s ease-out 0.62s forwards;
+    }
+    @keyframes inkLand {
+      to { color: var(--accent-deep); }
+    }
+
+    /* 3. Corner mark typewriter — character-by-character print */
+    .hero-corner {
+      display: inline-block;
+      clip-path: inset(0 100% 0 0);
+      animation: typeIn 0.62s steps(13, end) 0.35s forwards;
+    }
+    @keyframes typeIn {
+      to { clip-path: inset(0 0 0 0); }
+    }
+  }
 </style>
 </head>
 <body>
