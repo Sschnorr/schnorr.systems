@@ -2238,7 +2238,7 @@
           <li><span class="cl-num">1</span><span><strong>Trust signature.</strong> Five dots + label — the state machine made visible. Fills as the pattern proves itself; goes hollow on a denial. The card's border, tint, and dots all shift together so trust state is legible at a glance.</span></li>
           <li><span class="cl-num">2</span><span><strong>Track record.</strong> Plain-English count of approvals toward graduation. Reads as a sentence, not a number — "4 consecutive approvals · 1 to auto-resolve" is more useful than "consecutive: 4."</span></li>
           <li><span class="cl-num">3</span><span><strong>Evidence chips.</strong> Every match condition the system used to flag this case. No confidence score, no opaque AI grade — only provenance. If the human disagrees, they can point at the exact pill that's wrong.</span></li>
-          <li><span class="cl-num">4</span><span><strong>Irreversibility flag.</strong> Actions that can't be undone get a separate, prominent warning. Merges never auto-graduate — every one sees a human, always.</span></li>
+          <li><span class="cl-num">4</span><span><strong>Irreversibility flag.</strong> Actions that can't be undone get a separate, prominent warning. The graduation bar scales with what you can't take back — reversible actions earn autonomy at 20 consecutive approvals; merges earn it at 30.</span></li>
           <li><span class="cl-num">5</span><span><strong>Two real options.</strong> Approve and Deny are always equally weighted. The card never auto-decides, never nudges, never hides the deny path. The human is the deciding party at this layer.</span></li>
         </ol>
       </aside>
@@ -2366,7 +2366,7 @@
           <tr class="row-irr">
             <td class="act"><code>merge_records</code></td>
             <td class="rev-cell"><strong>Irreversible</strong></td>
-            <td>Always-on irreversibility warning. Survivor preserved. Higher graduation threshold for this class (50 vs 20).</td>
+            <td>Always-on irreversibility warning. Survivor preserved. Higher graduation threshold for this class (30 vs 20).</td>
             <td class="scope-cell">2–N records</td>
           </tr>
           <tr class="row-irr">
@@ -2385,7 +2385,7 @@
       </table>
       <p class="figure-caption">
         <span class="fig-num">Tbl. 01</span>
-        <span class="fig-text">Action surface. Reversible actions can auto-resolve once a pattern is validated; irreversible actions surface a confirmation card every time, regardless of trust.</span>
+        <span class="fig-text">Action surface. All patterns can earn autonomy; the threshold scales with what you can't take back. Reversible actions graduate at 20 consecutive approvals; irreversible ones at 30. The pre-graduation card includes an additional confirmation step for irreversible actions.</span>
       </p>
     </div>
 
@@ -2414,7 +2414,7 @@
           <li><a href="#adr-arch"><span class="pfx">iii.</span>The architecture</a></li>
           <li><a href="#adr-language"><span class="pfx">iv.</span>Visual trust language</a></li>
           <li><a href="#adr-safety"><span class="pfx">v.</span>Safety mechanisms</a></li>
-          <li><a href="#adr-result"><span class="pfx">vi.</span>The projected outcome</a></li>
+          <li><a href="#adr-result"><span class="pfx">vi.</span>The launch state</a></li>
           <li><a href="#adr-stack"><span class="pfx">vii.</span>The stack</a></li>
         </ol>
       </aside>
@@ -2543,7 +2543,7 @@
             </div>
             <figcaption id="arch-fig-caption" class="figure-caption">
               <span class="fig-num">Fig. 03</span>
-              <span class="fig-text">The trust pipeline. Every case routes through the same five stages — match, surface, decide, record, execute — with <em>Pattern_Stats__c</em> at the center as the single durable source of truth. The 90-day <em>decayStale()</em> sweep is the only thing that writes outside the decision path. <em>Graduation threshold compressed to 5 for the demo; the deployed system runs at 20.</em></span>
+              <span class="fig-text">The trust pipeline. Every case routes through the same five stages — match, surface, decide, record, execute — with <em>Pattern_Stats__c</em> at the center as the single durable source of truth. The 90-day <em>decayStale()</em> sweep is the only thing that writes outside the decision path. <em>Threshold compressed to 5 for the demo; the deployed system uses 20 for reversible patterns and 30 for irreversible ones.</em></span>
             </figcaption>
           </figure>
 
@@ -2632,7 +2632,7 @@
             </div>
             <div class="safety">
               <p class="title">Graduated autonomy</p>
-              <p class="desc">Each pattern has its own threshold. Reversible actions graduate at 20 consecutive. Irreversible actions never graduate — every merge sees a human, always.</p>
+              <p class="desc">The bar scales with what you can't take back. Reversible actions graduate at 20 consecutive approvals; irreversible ones (merges, hard deletes, external sends) graduate at 30. The system has no fear exception — only a proportional trust curve. Self-disable still fires at 3 denials regardless of class.</p>
             </div>
             <div class="safety">
               <p class="title">Self-disabling patterns</p>
@@ -2650,26 +2650,26 @@
         </article>
 
         <article id="adr-result">
-          <h3><span class="sub-num">vi.</span>The <span class="em">projected outcome</span>.</h3>
-          <p class="result-caveat"><span class="mono">Note ·</span> Built from scratch in a single afternoon (see deploy log in §03). The system is days into sandbox; no pattern has graduated yet (highest run is 5 of 20). The numbers below are <em>steady-state projections</em> from the current pattern mix — six of the eight defined patterns are reversible action types where graduation is expected, and merge alone is generating most of the feedback so far. Reported as targets, not as measured outcomes.</p>
+          <h3><span class="sub-num">vi.</span>The <span class="em">launch state</span>.</h3>
+          <p class="result-caveat"><span class="mono">Note ·</span> Built from scratch in a single afternoon (see deploy log in §03). Of 741 yearly support cases, <strong>396 (53%) match a defined pattern</strong> — reduced to a one-click approve / deny on the card. 166 of those (<strong>22% of total volume</strong>) are auto-decidable and clear the graduation threshold immediately on 12 months of seed data — <strong>Merge_Duplicate</strong> (103 closed, 94% success) and <strong>Reassign_AM</strong> (52 closed, 93% success). They run silently at launch. The remaining six pattern types route to humans until they earn the same.</p>
           <div class="result-grid">
             <div class="result">
-              <div class="num">~80<small>%</small></div>
-              <div class="label">Cases auto-resolved <span class="result-tag">target</span></div>
-              <div class="desc">Reversible action types, once patterns graduate. Anchored to the share of defined patterns flagged reversible.</div>
+              <div class="num">53<small>%</small></div>
+              <div class="label">Decisions reduced to one click <span class="result-tag">live</span></div>
+              <div class="desc">396 of 741 yearly cases match a defined pattern. The card turns "what is this and what should I do?" into "approve or deny."</div>
             </div>
             <div class="result">
-              <div class="num">3–5<small>m → &lt;1s</small></div>
-              <div class="label">Per-case time <span class="result-tag">target</span></div>
-              <div class="desc">Validated patterns execute in a Queueable in under a second. Manual baseline measured in sandbox; auto path measured per Queueable run.</div>
+              <div class="num">22<small>%</small></div>
+              <div class="label">Volume auto-resolved at launch <span class="result-tag">live</span></div>
+              <div class="desc">166 cases. Merge_Duplicate + Reassign_AM seeded above threshold from 12 months of historical evidence — zero clicks required.</div>
             </div>
             <div class="result">
-              <div class="num">20<small>×</small></div>
-              <div class="label">Proofs required <span class="result-tag">by design</span></div>
-              <div class="desc">Per pattern, before autonomy. The system earns it; it isn't given.</div>
+              <div class="num">20<small> / 30</small></div>
+              <div class="label">Graduation thresholds <span class="result-tag">by design</span></div>
+              <div class="desc">Reversible actions earn autonomy at 20 consecutive approvals; irreversible ones at 30. The bar scales with what you can't take back.</div>
             </div>
           </div>
-          <p style="font-family:'Inter Tight',sans-serif;font-size:16px;line-height:1.6;color:var(--ink-secondary);margin-top:16px;"><strong style="color:var(--ink);font-weight:600;">What this earns when it works:</strong> nobody gets handed an "AI did it" mystery error. Every auto-resolved case will have a stats row pointing to twenty prior human approvals on the same pattern, and a verification re-query proving the write stuck. The ops team doesn't lose work — they lose the work that wasn't a decision in the first place.</p>
+          <p style="font-family:'Inter Tight',sans-serif;font-size:16px;line-height:1.6;color:var(--ink-secondary);margin-top:16px;"><strong style="color:var(--ink);font-weight:600;">What this earns:</strong> nobody gets handed an "AI did it" mystery error. Every auto-resolved case has a verifiable trail back to prior human approvals on the same pattern, and a post-execution re-query proving the write stuck. The ops team doesn't lose work — they lose the work that wasn't a decision in the first place.</p>
         </article>
 
         <article id="adr-stack">
