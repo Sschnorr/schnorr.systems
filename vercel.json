@@ -1,0 +1,10 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/sws-01", "destination": "/work/decision-surface.html" }
+  ],
+  "redirects": [
+    { "source": "/work/decision-surface.html", "destination": "/sws-01", "permanent": true },
+    { "source": "/work/decision-surface", "destination": "/sws-01", "permanent": true }
+  ]
+}

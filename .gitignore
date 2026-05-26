@@ -10,6 +10,9 @@ sprint-d-variations.html
 # Outdated drafts
 work/instawork.html
 
+# Preview / mockup files — local only
+work/linkedin-post-preview.html
+
 # OS / editor noise
 .DS_Store
 .vscode/
