@@ -158,10 +158,11 @@
   .hero { padding: 56px 0 52px; border-bottom: 1px solid var(--graphite); }
 
   .doc-header {
-    display: grid;
-    grid-template-columns: max-content 1fr max-content;
-    gap: 0 18px;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
+    justify-content: flex-start;
+    gap: 10px 18px;
     margin-bottom: 44px;
     padding: 14px 0;
     border-top: 1px solid var(--graphite);
@@ -496,14 +497,12 @@
     .hero h1 { font-size: 32px; letter-spacing: -1px; }
     .hero .deck { font-size: 17px; }
     .doc-header {
-      grid-template-columns: 1fr;
-      gap: 10px;
+      gap: 8px 14px;
       padding: 12px 0;
       margin-bottom: 32px;
     }
-    .doc-header .doc-meta { font-size: 10px; gap: 10px; }
+    .doc-header .doc-meta { font-size: 10px; gap: 8px; }
     .doc-header .doc-meta .sep { display: none; }
-    .doc-header .doc-status { justify-self: start; }
     .byline-strip { gap: 8px 14px; padding-top: 14px; }
     .byline { font-size: 10px; }
     .section-header {
