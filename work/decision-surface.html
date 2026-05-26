@@ -157,53 +157,67 @@
      ================================================================= */
   .hero { padding: 56px 0 52px; border-bottom: 1px solid var(--graphite); }
 
+  /* Stamped field-note metadata block — vertical key/value stack,
+     hairline border, mono typography. Sits top-left of the hero.
+     Oxblood corner brackets give it the "stamped" feel. */
   .doc-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 10px 18px;
+    display: inline-block;
+    border: 1px solid var(--ink);
+    padding: 13px 22px 14px;
     margin-bottom: 44px;
-    padding: 14px 0;
-    border-top: 1px solid var(--graphite);
-    border-bottom: 1px solid var(--rule);
-  }
-  .doc-header .doc-id {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; font-weight: 700;
-    letter-spacing: 0.18em;
-    color: var(--graphite);
-    text-transform: uppercase;
-  }
-  .doc-header .doc-meta {
-    display: flex; align-items: center;
-    gap: 18px; flex-wrap: wrap;
     font-family: 'JetBrains Mono', monospace;
     font-size: 10.5px;
-    letter-spacing: 0.08em;
+    line-height: 1.7;
+    letter-spacing: 0.06em;
+    background: rgba(58, 53, 40, 0.03);
+    position: relative;
+  }
+  .doc-header::before,
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    width: 8px; height: 8px;
+    border: 1.5px solid var(--accent);
+  }
+  .doc-header::before {
+    top: -1px; left: -1px;
+    border-right: none; border-bottom: none;
+  }
+  .doc-header::after {
+    bottom: -1px; right: -1px;
+    border-left: none; border-top: none;
+  }
+  .doc-header .dh-row {
+    display: grid;
+    grid-template-columns: 84px 1fr;
+    gap: 14px;
+    white-space: nowrap;
+  }
+  .doc-header .dh-key {
     color: var(--ink-muted);
-    text-transform: uppercase;
-  }
-  .doc-header .doc-meta span { white-space: nowrap; }
-  .doc-header .doc-meta b {
-    color: var(--ink-secondary);
     font-weight: 700;
-    margin-right: 6px;
-  }
-  .doc-header .doc-meta .sep {
-    width: 1px; height: 11px;
-    background: var(--rule);
-    display: inline-block;
-  }
-  .doc-header .doc-status {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px; font-weight: 700;
-    letter-spacing: 0.18em;
-    color: var(--accent);
     text-transform: uppercase;
-    display: inline-flex; align-items: center; gap: 7px;
+    letter-spacing: 0.14em;
   }
-  .doc-header .doc-status::before {
+  .doc-header .dh-val {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .doc-header .dh-status {
+    margin-top: 5px;
+    padding-top: 7px;
+    border-top: 1px dashed var(--rule);
+  }
+  .doc-header .dh-status .dh-val {
+    color: var(--accent);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .doc-header .dh-status .dh-val::before {
     content: '';
     width: 6px; height: 6px;
     border-radius: 50%;
@@ -497,12 +511,14 @@
     .hero h1 { font-size: 32px; letter-spacing: -1px; }
     .hero .deck { font-size: 17px; }
     .doc-header {
-      gap: 8px 14px;
-      padding: 12px 0;
+      font-size: 10px;
+      padding: 11px 16px 12px;
       margin-bottom: 32px;
     }
-    .doc-header .doc-meta { font-size: 10px; gap: 8px; }
-    .doc-header .doc-meta .sep { display: none; }
+    .doc-header .dh-row {
+      grid-template-columns: 72px 1fr;
+      gap: 10px;
+    }
     .byline-strip { gap: 8px 14px; padding-top: 14px; }
     .byline { font-size: 10px; }
     .section-header {
@@ -644,16 +660,22 @@
   .card-actions { position: relative; }
   .card-actions .card-pin { top: -10px; right: -10px; }
 
-  /* Legend — appears below the guided-annotation when annotations on */
+  /* Legend — sits in the right column, replacing the stats-panel
+     when annotations are toggled on. Same sticky/scroll behavior. */
   .card-legend {
     display: none;
-    margin-top: 14px;
-    padding: 16px 18px;
-    background: var(--surface-soft);
-    border: 1px solid var(--graphite);
+    grid-column: 2;
+    background: var(--paper-deep);
+    border: 1px solid var(--rule);
     border-radius: 0;
+    padding: 18px 20px;
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
   }
-  .show-annotations .card-legend { display: block; }
+  .demo-grid.show-annotations .stats-panel { display: none; }
+  .demo-grid.show-annotations .card-legend { display: block; }
   .card-legend .cl-head {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
@@ -1370,8 +1392,13 @@
   @media (max-width: 900px) {
     .demo-grid { grid-template-columns: 1fr; }
     .stats-panel { position: static; }
+    .card-legend {
+      grid-column: 1;
+      position: static;
+      max-height: none;
+    }
     /* Pins read awkwardly at mobile widths — hide entirely. The legend
-       below still surfaces the same information in textual form. */
+       still surfaces the same information in textual form. */
     .show-annotations .card-pin { display: none; }
   }
   @media (max-width: 560px) {
@@ -2005,18 +2032,13 @@
      ============================================================ -->
 <header class="hero">
   <div class="container-wide">
-    <div class="doc-header">
-      <span class="doc-id">Doc · SWS-01</span>
-      <span class="doc-meta">
-        <span><b>Filed</b>Revenue infrastructure</span>
-        <span class="sep" aria-hidden="true"></span>
-        <span><b>Revision</b>2026.05</span>
-        <span class="sep" aria-hidden="true"></span>
-        <span><b>Scope</b>Salesforce-native</span>
-        <span class="sep" aria-hidden="true"></span>
-        <span><b>Build</b>1 afternoon · 22 May 2026</span>
-      </span>
-      <span class="doc-status">In sandbox</span>
+    <div class="doc-header" role="group" aria-label="Document metadata">
+      <div class="dh-row"><span class="dh-key">Doc</span><span class="dh-val">SWS-01</span></div>
+      <div class="dh-row"><span class="dh-key">Filed</span><span class="dh-val">Revenue infrastructure</span></div>
+      <div class="dh-row"><span class="dh-key">Revision</span><span class="dh-val">2026.05</span></div>
+      <div class="dh-row"><span class="dh-key">Scope</span><span class="dh-val">Salesforce-native</span></div>
+      <div class="dh-row"><span class="dh-key">Build</span><span class="dh-val">1 afternoon · 22 May 2026</span></div>
+      <div class="dh-row dh-status"><span class="dh-key">Status</span><span class="dh-val">In sandbox</span></div>
     </div>
     <h1>Some Salesforce actions can't be undone. So AI has to <span class="em">earn</span> the right to take them — one approval at a time.</h1>
     <p class="deck">A Salesforce-native decision surface for the moment AI agents start doing real work — keeping humans in the loop while the system learns which patterns it can take over. Built so trust compounds in one durable place, not a hundred Slack threads.</p>
@@ -2161,18 +2183,6 @@
           <div class="ga-actions" id="ga-actions" hidden></div>
         </div>
 
-        <!-- Card legend — reveals when annotations are on.
-             Numbered explanations matching the pins on the card. -->
-        <aside class="card-legend" aria-label="Card design notes">
-          <div class="cl-head">Design notes · what each pin marks</div>
-          <ol>
-            <li><span class="cl-num">1</span><span><strong>Trust signature.</strong> Five dots + label — the state machine made visible. Fills as the pattern proves itself; goes hollow on a denial. The card's border, tint, and dots all shift together so trust state is legible at a glance.</span></li>
-            <li><span class="cl-num">2</span><span><strong>Track record.</strong> Plain-English count of approvals toward graduation. Reads as a sentence, not a number — "4 consecutive approvals · 1 to auto-resolve" is more useful than "consecutive: 4."</span></li>
-            <li><span class="cl-num">3</span><span><strong>Evidence chips.</strong> Every match condition the system used to flag this case. No confidence score, no opaque AI grade — only provenance. If the human disagrees, they can point at the exact pill that's wrong.</span></li>
-            <li><span class="cl-num">4</span><span><strong>Irreversibility flag.</strong> Actions that can't be undone get a separate, prominent warning. Merges never auto-graduate — every one sees a human, always.</span></li>
-            <li><span class="cl-num">5</span><span><strong>Two real options.</strong> Approve and Deny are always equally weighted. The card never auto-decides, never nudges, never hides the deny path. The human is the deciding party at this layer.</span></li>
-          </ol>
-        </aside>
       </div>
 
       <!-- Right column: stats panel with scenarios -->
@@ -2217,6 +2227,20 @@
         </ul>
 
         <button class="reset-btn" id="reset">↺ Reset pattern</button>
+      </aside>
+
+      <!-- Card legend — overlays the stats panel position when annotations are on.
+           Numbered explanations matching the pins on the card.
+           Toggled off-stage by .demo-grid.show-annotations CSS rules. -->
+      <aside class="card-legend" aria-label="Card design notes">
+        <div class="cl-head">Design notes · what each pin marks</div>
+        <ol>
+          <li><span class="cl-num">1</span><span><strong>Trust signature.</strong> Five dots + label — the state machine made visible. Fills as the pattern proves itself; goes hollow on a denial. The card's border, tint, and dots all shift together so trust state is legible at a glance.</span></li>
+          <li><span class="cl-num">2</span><span><strong>Track record.</strong> Plain-English count of approvals toward graduation. Reads as a sentence, not a number — "4 consecutive approvals · 1 to auto-resolve" is more useful than "consecutive: 4."</span></li>
+          <li><span class="cl-num">3</span><span><strong>Evidence chips.</strong> Every match condition the system used to flag this case. No confidence score, no opaque AI grade — only provenance. If the human disagrees, they can point at the exact pill that's wrong.</span></li>
+          <li><span class="cl-num">4</span><span><strong>Irreversibility flag.</strong> Actions that can't be undone get a separate, prominent warning. Merges never auto-graduate — every one sees a human, always.</span></li>
+          <li><span class="cl-num">5</span><span><strong>Two real options.</strong> Approve and Deny are always equally weighted. The card never auto-decides, never nudges, never hides the deny path. The human is the deciding party at this layer.</span></li>
+        </ol>
       </aside>
 
     </div>
@@ -3206,13 +3230,16 @@
     render();
   });
 
-  // Card annotation toggle — design notes layer
+  // Card annotation toggle — design notes layer.
+  // Class lives on .demo-grid so both the card pins (in the left column)
+  // and the legend (in the right column, overlaying the stats panel)
+  // share one trigger.
   const annotateBtn = document.getElementById('annotate-btn');
-  const demoLeft = document.getElementById('demo-left');
+  const demoGrid = document.querySelector('.demo-grid');
   let annotationsOn = false;
   function setAnnotations(on) {
     annotationsOn = on;
-    demoLeft.classList.toggle('show-annotations', on);
+    demoGrid.classList.toggle('show-annotations', on);
     annotateBtn.classList.toggle('active', on);
     annotateBtn.textContent = on ? 'Hide design notes' : 'Show design notes';
     annotateBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
