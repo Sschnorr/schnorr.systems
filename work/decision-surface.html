@@ -2238,7 +2238,7 @@
           <li><span class="cl-num">1</span><span><strong>Trust signature.</strong> Five dots + label — the state machine made visible. Fills as the pattern proves itself; goes hollow on a denial. The card's border, tint, and dots all shift together so trust state is legible at a glance.</span></li>
           <li><span class="cl-num">2</span><span><strong>Track record.</strong> Plain-English count of approvals toward graduation. Reads as a sentence, not a number — "4 consecutive approvals · 1 to auto-resolve" is more useful than "consecutive: 4."</span></li>
           <li><span class="cl-num">3</span><span><strong>Evidence chips.</strong> Every match condition the system used to flag this case. No confidence score, no opaque AI grade — only provenance. If the human disagrees, they can point at the exact pill that's wrong.</span></li>
-          <li><span class="cl-num">4</span><span><strong>Irreversibility flag.</strong> Actions that can't be undone get a separate, prominent warning. The graduation bar scales with what you can't take back — reversible actions earn autonomy at 20 consecutive approvals; merges earn it at 30.</span></li>
+          <li><span class="cl-num">4</span><span><strong>Irreversibility flag.</strong> Actions that can't be undone get a separate, prominent warning. Reversible patterns graduate at 20 consecutive approvals; merges graduate at 30.</span></li>
           <li><span class="cl-num">5</span><span><strong>Two real options.</strong> Approve and Deny are always equally weighted. The card never auto-decides, never nudges, never hides the deny path. The human is the deciding party at this layer.</span></li>
         </ol>
       </aside>
@@ -2385,7 +2385,7 @@
       </table>
       <p class="figure-caption">
         <span class="fig-num">Tbl. 01</span>
-        <span class="fig-text">Action surface. All patterns can earn autonomy; the threshold scales with what you can't take back. Reversible actions graduate at 20 consecutive approvals; irreversible ones at 30. The pre-graduation card includes an additional confirmation step for irreversible actions.</span>
+        <span class="fig-text">Action surface. All patterns can earn autonomy; reversible actions graduate at 20 consecutive approvals, irreversible ones at 30. The pre-graduation card includes an additional confirmation step for irreversible actions.</span>
       </p>
     </div>
 
@@ -2431,13 +2431,13 @@
         <article id="adr-insight">
           <h3><span class="sub-num">ii.</span>The <span class="em">insight</span>.</h3>
           <p>Trust is a <strong>signal</strong>, not a switch. The system should be allowed to act unsupervised <em>only</em> on patterns where it has accumulated evidence of correctness — and the evidence has to come from the people whose work it's affecting. Every human decision becomes data: an approval reinforces the pattern, a denial weakens it. Patterns that earn enough consecutive approvals graduate to autonomy. Patterns that accumulate denials self-disable and ring a bell.</p>
-          <p>The interface had to reflect this. A pattern that has handled 247 cases without a denial should <em>look</em> different from a pattern that hit its first denial yesterday. The visual treatment carries the trust metadata — the five-dot signature, the case meta line, the conditional banner — so the human approver knows, at a glance, how much weight to give the system's recommendation.</p>
+          <p>A pattern that has handled 247 cases without a denial should <em>look</em> different from a pattern that hit its first denial yesterday. The visual treatment carries the trust metadata — the five-dot signature, the case meta line, the conditional banner — so the human approver knows, at a glance, how much weight to give the system's recommendation.</p>
         </article>
 
         <article id="adr-arch">
           <h3><span class="sub-num">iii.</span>The <span class="em">architecture</span>.</h3>
           <p>One case → one pattern lookup → one decision card → one human input → one stats update → maybe one queued action. Everything else is plumbing.</p>
-          <p>The matcher (<code>CasePatternMatcher</code>) and the stats service (<code>PatternStatsService</code>) are pure Apex with no UI awareness. The card is a pure Lightning Web Component with no business logic — it asks the four questions, shows what the system found, and emits an event. The <code>Queueable</code> executor is the only place that <em>writes</em>; it runs asynchronously, chains itself for batches over 200, and re-queries after each write to verify the change landed before declaring success.</p>
+          <p>The matcher (<code>CasePatternMatcher</code>) and the stats service (<code>PatternStatsService</code>) are pure Apex with no UI awareness. The card is a pure Lightning Web Component — asks four questions, shows what the system found, emits an event. The <code>Queueable</code> executor is the only place that <em>writes</em>; it runs asynchronously, chains itself for batches over 200, and re-queries after each write to verify the change landed before declaring success.</p>
           <p>The whole trust model lives in seven fields on one custom object: <code>Pattern_Stats__c</code>. Every reinforce/weaken is a single row update under optimistic <code>FOR UPDATE</code> locking. Nothing's distributed. Nothing's eventually consistent. The state of the world fits in one row, and that row is the source of truth for whether the next case surfaces or runs silently.</p>
 
           <figure class="arch-figure" aria-labelledby="arch-fig-caption">
@@ -2559,7 +2559,7 @@
               <li><span class="dl-time">13:41</span><span><code>DecisionSurfaceChatterService</code> — audit trail</span></li>
               <li><span class="dl-time">14:38</span><span><code>PatternStatsService</code> + <code>PatternLearningSchedulable</code> — state + decay</span></li>
             </ol>
-            <p class="dl-footnote"><em>First real case feedback:</em> 12:51 — 39 minutes after the first class deployed. End-to-end backend live in 2h 26m. Built from scratch on the day; the velocity is what compounds when you've built enough of these kinds of systems before.</p>
+            <p class="dl-footnote">End-to-end backend live in 2h 26m. The velocity is what compounds.</p>
           </aside>
         </article>
 
@@ -2632,7 +2632,7 @@
             </div>
             <div class="safety">
               <p class="title">Graduated autonomy</p>
-              <p class="desc">The bar scales with what you can't take back. Reversible actions graduate at 20 consecutive approvals; irreversible ones (merges, hard deletes, external sends) graduate at 30. The system has no fear exception — only a proportional trust curve. Self-disable still fires at 3 denials regardless of class.</p>
+              <p class="desc">Reversible actions graduate at 20 consecutive approvals; irreversible ones (merges, hard deletes, external sends) graduate at 30. No fear exception — only a proportional trust curve. Self-disable still fires at 3 denials regardless of class.</p>
             </div>
             <div class="safety">
               <p class="title">Self-disabling patterns</p>
@@ -2697,7 +2697,7 @@
             </li>
             <li>
               <span class="tech">Decay · Schedulable</span>
-              <span class="role">Nightly sweep clears <code>auto_resolve</code> on any pattern with <code>last_decision_at</code> older than 90 days. Old trust isn't trust.</span>
+              <span class="role">Nightly sweep clears <code>auto_resolve</code> on any pattern with <code>last_decision_at</code> older than 90 days.</span>
             </li>
           </ul>
         </article>
@@ -2714,12 +2714,11 @@
   <div class="container">
     <div class="close-eyebrow">What I take from this</div>
     <h2 class="close-title">Trust <span class="em">compounds</span> — most people just underinvest in it.</h2>
-    <p class="close-body">The payoff is slow and invisible, which is why most decision surfaces are designed against trust rather than for it. Every decision system I've shipped has had the same shape underneath: a moment where a human says yes or no, and a question about whether the system can absorb that judgment for next time. Most surfaces throw that signal away the moment the button is clicked. The Decision Surface keeps it. One row, one pattern, one verdict at a time — until the system has earned the right to act on its own.</p>
-    <p class="close-body">The four questions aren't a checklist; they're a discipline. The trust signature isn't a badge; it's an honest read of what the system has actually been told. The interesting thing about working this way is what stops happening: the same case stops surfacing forever, and the unfamiliar ones stop hiding inside a queue full of routine.</p>
+    <p class="close-body">The payoff is slow and invisible, which is why most decision surfaces are designed against trust rather than for it. What stops happening: the same case stops surfacing forever, and the unfamiliar ones stop hiding inside a queue full of routine.</p>
 
     <div class="next-up">
-      <strong>What's next</strong>
-      A RevOps prioritization engine on the same trust architecture — surfacing what to build, what to defer, and what to retire, with the same per-pattern provenance. In progress.
+      <strong>What's next:</strong>
+      A RevOps prioritization engine on the same trust architecture — surfacing what to build, what to defer, and what to retire. In progress.
     </div>
 
     <a class="close-cta" href="/">Back to portfolio →</a>
